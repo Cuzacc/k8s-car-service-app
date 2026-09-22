@@ -17,8 +17,7 @@
 3. [Chạy Cục Bộ Với Docker Compose](#-chạy-cục-bộ-với-docker-compose)
 4. [Triển Khai Trên Kubernetes](#-triển-khai-trên-kubernetes)
 5. [Telemetry & Metrics Ứng Dụng](#-telemetry--metrics-ứng-dụng)
-6. [Điểm Nhấn Cho CV](#-điểm-nhấn-cho-cv)
-7. [Tác Giả](#-tác-giả)
+6. [Tác Giả](#-tác-giả)
 
 ---
 
@@ -135,15 +134,6 @@ Backend API được nhúng sẵn Prometheus Client SDK (`prom-client`), tự đ
 | `http_request_duration_seconds` | Histogram | Phân phối thời gian phản hồi của API (p50, p95, p99). |
 | `db_queries_total` | Counter | Tổng số câu truy vấn PostgreSQL thành công hoặc thất bại. |
 | `active_service_bookings_total` | Gauge | Số lượng lịch bảo dưỡng xe đang hoạt động trong database. |
-
----
-
-## 🌟 Điểm Nhấn Cho CV
-
-* **Kiến Trúc Microservices 3-Tier:** Thiết kế và triển khai hệ thống phân tán gồm Frontend Nginx, Backend REST API và PostgreSQL StatefulSet có độ sẵn sàng cao trên Kubernetes.
-* **Tích Hợp Application Performance Monitoring (APM):** Nhúng thư viện `prom-client` thu thập chỉ số theo chuẩn RED Method giúp hệ thống Prometheus/Grafana quan sát chi tiết hiệu năng ứng dụng.
-* **Bảo Mật & Zero-Downtime:** Cấu hình Pod chạy quyền Non-Root, `readOnlyRootFilesystem: true`, tích hợp PodDisruptionBudget (PDB), PodAntiAffinity và PreStop Hook giúp không rớt traffic khi cập nhật hệ thống.
-* **DevSecOps Pipeline:** Xây dựng GitHub Actions tự động kiểm tra cú pháp Dockerfile (Hadolint), Kubernetes manifests (Kubeconform) và quét lỗ hổng bảo mật (Trivy).
 
 ---
 
