@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: car-serv-frontend-svc
+  namespace: app
+  labels:
+    app.kubernetes.io/name: car-serv-frontend
+    tier: web-tier
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: car-serv-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: car-serv-frontend-pdb
+  namespace: app
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: car-serv-frontend

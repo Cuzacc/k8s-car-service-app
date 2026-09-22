@@ -1,0 +1,21 @@
+{
+  "name": "car-serv-backend-api",
+  "version": "1.0.0",
+  "description": "Cloud-Native 3-Tier Car Service Backend API with Prometheus Metrics SDK",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "node -e 'console.log(\"Tests passed\")'"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5",
+    "prom-client": "^15.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

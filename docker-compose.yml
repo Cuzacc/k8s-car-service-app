@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # ==========================================
+  # Tier 3: Data Tier (PostgreSQL)
+  # ==========================================
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: autocare-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: autocare_db
+      POSTGRES_USER: car_admin
+      POSTGRES_PASSWORD: car_secure_pass_2025
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./k8s/01-database/configmap-init.yaml:/tmp/config.yaml
+    networks:
+      - autocare-network
+
+  # ==========================================
+  # Tier 2: Application Tier (Backend REST API)
+  # ==========================================
+  backend-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: autocare-backend
+    restart: unless-stopped
+    environment:
+      PORT: 5000
+      DB_HOST: postgres-db
+      DB_PORT: 5432
+      DB_NAME: autocare_db
+      DB_USER: car_admin
+      DB_PASSWORD: car_secure_pass_2025
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres-db
+    networks:
+      - autocare-network
+
+  # ==========================================
+  # Tier 1: Presentation Tier (Frontend Nginx)
+  # ==========================================
+  frontend-web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: autocare-frontend
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    depends_on:
+      - backend-api
+    networks:
+      - autocare-network
+
+networks:
+  autocare-network:
+    driver: bridge
+
+volumes:
+  pgdata:

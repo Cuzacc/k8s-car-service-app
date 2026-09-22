@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoCare Cloud - 3-Tier Enterprise Microservices</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <span class="logo-icon">🚗</span>
+                <span class="logo-text">AutoCare<strong>Cloud</strong> <small class="tier-tag">3-Tier Microservices</small></span>
+            </div>
+            <nav class="nav-links">
+                <a href="#services">Services</a>
+                <a href="#bookings">Live Bookings</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#metrics">System Telemetry</a>
+                <a href="#booking-modal" class="btn btn-primary" id="btn-open-modal">+ Book Service</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-content">
+                <div class="badge">Enterprise 3-Tier Cloud-Native Architecture</div>
+                <h1 class="hero-title">Automotive Service Platform & Telemetry Hub</h1>
+                <p class="hero-subtitle">
+                    Decoupled 3-tier microservices architecture featuring an unprivileged Nginx Frontend (Tier 1), Node.js REST API with Prometheus Instrumentation (Tier 2), and Persistent PostgreSQL Database (Tier 3).
+                </p>
+                <div class="hero-actions">
+                    <button id="btn-quick-book" class="btn btn-primary">Schedule Diagnostics</button>
+                    <button id="btn-check-api" class="btn btn-outline">Test Backend API Connection</button>
+                </div>
+                <div id="api-status-box" class="status-card" style="display: none;">
+                    <div class="status-indicator online"></div>
+                    <span id="api-status-text">Probing Backend Service...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Services Section (Tier 2 API Integration) -->
+        <section id="services" class="section bg-alt">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Available Maintenance Services</h2>
+                    <p>Live service catalog retrieved dynamically from PostgreSQL database via Backend REST API.</p>
+                </div>
+                <div id="services-grid" class="grid grid-3">
+                    <div class="card loading-card">Loading catalog from Backend API...</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Bookings Section (Tier 3 Data Store) -->
+        <section id="bookings" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Active Service Appointments</h2>
+                    <p>Real-time booking records synchronized across database replicas.</p>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer Name</th>
+                                <th>Vehicle Model</th>
+                                <th>Service Package</th>
+                                <th>Status</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-tbody">
+                            <tr><td colspan="6" style="text-align:center;">Fetching records from database...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3-Tier Architecture Visualization -->
+        <section id="architecture" class="section bg-alt">
+            <div class="container">
+                <div class="section-header">
+                    <h2>3-Tier Cloud-Native Topology</h2>
+                    <p>Engineered for high reliability, fault isolation, and independent horizontal scaling.</p>
+                </div>
+                <div class="grid grid-3">
+                    <div class="arch-card">
+                        <div class="arch-badge tier-1">TIER 1: PRESENTATION</div>
+                        <h3>Web Portal & Reverse Proxy</h3>
+                        <ul>
+                            <li><strong>Tech:</strong> Nginx Alpine (Non-Root UID 101)</li>
+                            <li><strong>Port:</strong> 80 (External) -> 8080 (Container)</li>
+                            <li><strong>Scaling:</strong> HPA 2 to 6 Pods</li>
+                        </ul>
+                    </div>
+                    <div class="arch-card">
+                        <div class="arch-badge tier-2">TIER 2: APPLICATION</div>
+                        <h3>REST API & Prometheus SDK</h3>
+                        <ul>
+                            <li><strong>Tech:</strong> Node.js Express + prom-client</li>
+                            <li><strong>Port:</strong> 5000 (ClusterIP internal)</li>
+                            <li><strong>Metrics:</strong> Custom RED Method & DB Latency</li>
+                        </ul>
+                    </div>
+                    <div class="arch-card">
+                        <div class="arch-badge tier-3">TIER 3: DATA STORE</div>
+                        <h3>PostgreSQL Stateful Cluster</h3>
+                        <ul>
+                            <li><strong>Tech:</strong> PostgreSQL 16 Alpine</li>
+                            <li><strong>Storage:</strong> PersistentVolumeClaim (PVC)</li>
+                            <li><strong>Resilience:</strong> StatefulSet with init seed</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Runtime Telemetry -->
+        <section id="metrics" class="section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Cluster & Service Telemetry</h2>
+                    <p>Real-time telemetry gathered across all three architectural layers.</p>
+                </div>
+                <div class="telemetry-box">
+                    <div class="telemetry-item">
+                        <span class="t-label">Architecture Tier:</span>
+                        <span class="t-value text-accent">3-Tier Decoupled</span>
+                    </div>
+                    <div class="telemetry-item">
+                        <span class="t-label">Backend Connection:</span>
+                        <span class="t-value text-success" id="telemetry-db-status">ClusterIP OK</span>
+                    </div>
+                    <div class="telemetry-item">
+                        <span class="t-label">Observability Pipeline:</span>
+                        <span class="t-value">Prometheus / Loki / Grafana</span>
+                    </div>
+                    <div class="telemetry-item">
+                        <span class="t-label">Frontend Uptime:</span>
+                        <span class="t-value" id="uptime-counter">0m 0s</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Book Service Appointment</h3>
+                <button id="btn-close-modal" class="btn-close">&times;</button>
+            </div>
+            <form id="booking-form">
+                <div class="form-group">
+                    <label>Full Name:</label>
+                    <input type="text" id="cust-name" required placeholder="e.g. Nguyen Van A">
+                </div>
+                <div class="form-group">
+                    <label>Vehicle Model:</label>
+                    <input type="text" id="cust-vehicle" required placeholder="e.g. VinFast VF8, Porsche Macan">
+                </div>
+                <div class="form-group">
+                    <label>Select Service:</label>
+                    <select id="cust-service">
+                        <option value="1">Periodic Maintenance ($89.99)</option>
+                        <option value="2">EV & Battery Diagnostics ($149.99)</option>
+                        <option value="3">ECU Tuning & Calibration ($199.99)</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="btn-submit-booking">Submit to Backend API</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <p>&copy; 2025 AutoCare Cloud. Production-grade 3-Tier Kubernetes Demonstration.</p>
+            <p class="tech-stack">Nginx (Tier 1) | Node.js Express (Tier 2) | PostgreSQL 16 (Tier 3) | PLG Observability</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

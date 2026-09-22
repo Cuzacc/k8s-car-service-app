@@ -1,0 +1,102 @@
+name: Production 3-Tier CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+permissions:
+  contents: read
+
+env:
+  REGISTRY: docker.io
+
+jobs:
+  # ==============================================================================
+  # Job 1: Static Code Analysis & Manifest Validation
+  # ==============================================================================
+  lint-and-validate:
+    name: Lint & Manifest Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Lint Frontend Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: "frontend/Dockerfile"
+          failure-threshold: error
+
+      - name: Lint Backend Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: "backend/Dockerfile"
+          failure-threshold: error
+
+      - name: Validate Kubernetes Manifests
+        uses: yannh/kubeconform-action@v0.8.4
+        with:
+          k8s-version: "1.28.0"
+          files: "k8s/**/*.yaml"
+
+  # ==============================================================================
+  # Job 2: Build & Scan Frontend Image
+  # ==============================================================================
+  build-frontend:
+    name: Build & Scan Frontend Nginx
+    needs: lint-and-validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: frontend/Dockerfile
+          load: true
+          tags: car-serv-frontend:test
+
+      - name: Vulnerability Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'car-serv-frontend:test'
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+
+  # ==============================================================================
+  # Job 3: Build & Scan Backend API Image
+  # ==============================================================================
+  build-backend:
+    name: Build & Scan Backend API
+    needs: lint-and-validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: backend/Dockerfile
+          load: true
+          tags: car-serv-backend:test
+
+      - name: Vulnerability Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'car-serv-backend:test'
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
